@@ -1,0 +1,330 @@
+body {
+    font-family: 'Ubuntu', sans-serif;
+    background: #22C1C3;
+    background: linear-gradient(0deg,rgba(34, 193, 195, 1) 0%, rgba(255, 228, 171, 1) 100%);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+#title {
+    font-size: 40px;
+    width: 100%;
+    margin: 2% 5%; 
+    text-align: center;
+    font-family: 'Ubuntu', sans-serif;
+    color: #70c6ff;
+}
+
+/* This class is used for the main headings on auth pages like "Welcome Back!" */
+.auth-title {
+    font-size: 40px;
+    width: 90%;
+    margin: 2% auto;
+    text-align: center;
+    font-family: 'Ubuntu', sans-serif;
+    color: #333;
+    font-weight: bold;
+}
+
+
+/* Authentication Page Styles (index.html, register.html) */
+.auth-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    padding: 20px;
+}
+
+.auth-form {
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+#loginDiv {
+    font-size: 30px; 
+    width: 70%;     
+    padding: 25px;
+    background-color: rgba(112, 198, 255, 0.522);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+#registerDiv {
+    font-size: 30px; 
+    width: 70%;     
+    padding: 25px;
+    background-color: rgba(112, 198, 255, 0.522);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.form-subtitle {
+    display: block;
+    text-align: center;
+    color: #555; /* Keeping this for now, can be adjusted */
+    margin-bottom: 1.5rem; 
+    font-size: 20px; 
+}
+
+.form-group {
+    margin-bottom: 1.25rem; 
+}
+
+.form-label {
+    display: block;
+    font-size: 30px; 
+    font-weight: 500;
+    color: #333; /* Label color */
+    margin-bottom: 0.5rem; 
+}
+
+.form-input, input[type="text"], input[type="password"] {
+    width: 80%; 
+    margin-left: 10%;
+    margin-bottom: 2%;
+    padding: 0.875rem 1rem; 
+    border: 1px solid #d1d5db;
+    border-radius: 25px;
+    font-size: 30px;
+    text-align: center;
+    box-sizing: border-box; 
+    font-family: 'Ubuntu', sans-serif;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+#loginName, #loginPassword, #searchText, #colorText {
+    font-size: 30px;
+}
+
+.form-input:focus, input[type="text"]:focus, input[type="password"]:focus {
+    border-color: #3b82f6; 
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    outline: none;
+}
+
+.button {
+    width: 50%;
+    margin-left: 25%;
+    color: white; 
+    font-weight: 600;
+    padding: 0.875rem 1rem; 
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 30px;
+    font-family: 'Ubuntu', sans-serif;
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, opacity 0.2s ease-in-out; /* Added opacity */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.button:hover { /* hover effect for .buttons */
+    background-color: #00d5124f;
+    color: #FFFFFF;
+    opacity: 0.5;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.button-primary {
+    background-color: #3b82f6; 
+}
+
+.button-success {
+    background-color: #10b981; 
+}
+
+.button-danger { /* For logout button */
+    background-color: #ef4444; 
+    /* Overriding width and margin for this specific danger button if needed */
+    width: auto; 
+    margin-left: 0;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+#loginResult, .form-message {
+    display: inline-block;
+    font-size: 0.8em;
+    width: 90%;
+    text-align: center;
+    margin-left: 5%;
+    margin-bottom: 2%;
+    font-family: 'Ubuntu', sans-serif;
+    color: #95060a;
+    min-height: 1.25rem; 
+}
+
+.form-message.success {
+    color: #10b981; 
+}
+.form-message.error {
+    color: #ef4444; 
+}
+
+.auth-link {
+    text-align: center;
+    color: #555;
+    margin-top: 1.5rem; 
+}
+.auth-link a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+}
+.auth-link a:hover {
+    text-decoration: underline;
+    color: #2563eb;
+}
+
+/* Dashboard Page Styles (dashboard.html) */
+.navbar {
+    background-color: #3b82f6; 
+    padding: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-brand {
+    color: white;
+    font-size: 1.5rem; 
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.dashboard-container {
+    margin-top: 2.5rem; 
+}
+
+.card {
+    background-color: #ffffff;
+    padding: 2rem; 
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-title {
+    font-size: 2.5rem; 
+    font-weight: bold;
+    color: #1f2937; 
+    margin-bottom: 1.5rem; 
+}
+
+.dashboard-text {
+    color: #4b5563; 
+    font-size: 1.125rem; 
+    margin-bottom: 1rem; 
+    line-height: 1.6;
+}
+
+.features-grid {
+    margin-top: 2rem; 
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 1.5rem; 
+}
+
+.feature-card {
+    background-color: #f0f9ff; 
+    padding: 1.5rem; 
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s ease;
+}
+.feature-card:hover {
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+.feature-card:nth-child(2) { background-color: #f0fdf4; }
+.feature-card:nth-child(2) .feature-title { color: #15803d; }
+.feature-card:nth-child(2) p { color: #16a34a; }
+.feature-card:nth-child(3) { background-color: #fffbeb; }
+.feature-card:nth-child(3) .feature-title { color: #b45309; }
+.feature-card:nth-child(3) p { color: #d97706; }
+.feature-title { font-size: 1.25rem; font-weight: 600; color: #1e40af; margin-bottom: 0.5rem; }
+.feature-card p { color: #1c51b9; font-size: 0.95rem; line-height: 1.5; }
+
+
+
+#loggedInDiv, #accessUIDiv {
+    font-size: 30px;
+    width: 70%;
+    margin-left: 15%;
+    padding: 25px;
+    background-color: #b2b2b2;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+/* This is different from .auth-page-title used for H1s */
+#auth-title { 
+    display: inline-block;
+    font-size: 0.8em;
+    width: 90%;
+    text-align: center;
+    margin-left: 5%;
+    margin-bottom: 2%;
+    font-family: 'Ubuntu', sans-serif;
+    color: #95060a;
+}
+
+#userName {
+    display: inline-block;
+    width: 80%;
+    margin-left: 10%;
+    text-align: center;
+    font-size: 1.2rem;
+    color: #fff;
+    padding: 10px 0;
+}
+
+#logoutButton {
+    width: 20%; /*might be too small */
+    margin-left: 40%;
+    /* These styles are applied if the button has id="logoutButton" */
+    /* The .button.button-danger class provides base styling */
+}
+
+select {
+    width: 30%;
+    margin-left: 35%;
+    margin-top: 2%;
+    font-size: 0.75em;
+    font-family: 'Ubuntu', sans-serif;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#colorSearchResult {
+    display: none;
+}
+
+#colorAddResult {
+    display: inline-block;
+    font-size: 0.8em;
+    width: 90%;
+    text-align: center;
+    margin-left: 5%;
+    margin-top: 2%;
+    margin-bottom: 1%;
+    font-family: 'Ubuntu', sans-serif;
+    color: #95060a;
+}
