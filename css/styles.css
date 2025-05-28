@@ -105,6 +105,30 @@ body {
     background-color: #1e8e82;
 }
 
+.button-back {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: rgba(0, 47, 75, 0.9);
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    z-index: 1000; /* keep it on top */
+}
+
+.button-back:hover {
+    background-color: rgba(0, 90, 120, 0.9);
+    transform: translateY(-2px);
+}
+
 /* AUTHENTICATION CONTAINER */
 
 .auth-container {
