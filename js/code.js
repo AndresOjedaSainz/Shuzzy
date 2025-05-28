@@ -13,13 +13,13 @@ function doLogin()
 	
 	let login = document.getElementById("loginName").value;
 	let password = document.getElementById("loginPassword").value;
-	var hash = md5( password );
 
 	if (!validLogin(login, password)) {
         document.getElementById("loginResult").innerHTML = "Username / Password is incorrect!";
         return;
     }
 	
+	var hash = md5( password );
 	document.getElementById("loginResult").innerHTML = "";
 
 	let tmp = {login:login,password:hash};
@@ -64,11 +64,10 @@ function doLogin()
 
 function doRegister()
 {
-	firstName = document.getElementById("firstName").value;
-    lastName = document.getElementById("lastName").value;
-
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
+	firstName = document.getElementById("registerFirstName").value;
+    lastName = document.getElementById("registerLastName").value;
+    let username = document.getElementById("registerUsername").value;
+    let password = document.getElementById("registerPassword").value;
 
     if (!validRegister(firstName, lastName, username, password)) {
         document.getElementById("registerResult").innerHTML = "invalid registry";
@@ -94,12 +93,9 @@ function doRegister()
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
 
-    try {
+try {
         xhr.onreadystatechange = function () {
-
-            if (this.readyState != 4) {
-                return;
-            }
+            if (this.readyState != 4) return;
 
             if (this.status == 409) {
                 document.getElementById("registerResult").innerHTML = "User already exists";
@@ -107,16 +103,17 @@ function doRegister()
             }
 
             if (this.status == 200) {
-
                 let jsonObject = JSON.parse(xhr.responseText);
-                userId = jsonObject.id;
-                document.getElementById("registerResult").innerHTML = "User added";
-                firstName = jsonObject.firstName;
-                lastName = jsonObject.lastName;
-                saveCookie();
+                if (jsonObject.error) {
+                    document.getElementById("registerResult").innerHTML = jsonObject.error;
+                } else {
+                    document.getElementById("registerResult").innerHTML = "Registration successful! Redirecting...";
+                    setTimeout(() => {
+                        window.location.href = "login.html";
+                    }, 2000);
+                }
             }
         };
-
         xhr.send(jsonPayload);
     } catch (err) {
         document.getElementById("registerResult").innerHTML = err.message;
@@ -174,111 +171,55 @@ function doLogout()
 }
 
 // Go through all possible failed logins returns true if valid login
-function validLogin(logName, logPass) {
-
-    var logNameErr = logPassErr = true;
-
-    if (logName == "") {
-        console.log("Please Fill In a Username");
-    }
-    else {
-        var regex = /(?=.*[A-Za-z]).{8,32}/;
-
-        if (regex.test(logName) == false) {
-            console.log("Username Contains Invalid Information");
-        }
-
-        else {
-
-            console.log("Username is Valid!");
-            logNameErr = false;
+function validLogin(login, password) {
+    let errors = [];
+    
+    if (!login) {
+        errors.push("Username required");
+    } else {
+        const regex = /^[A-Za-z0-9]{8,32}$/;
+        if (!regex.test(login)) {
+            errors.push("Username: 8-32 alphanumeric characters");
         }
     }
-
-    if (logPass == "") {
-        console.log("Please Fill In a Password");
-        logPassErr = true;
-    }
-    else {
-        var regex = /(?=.*[A-Za-z]).{8,32}/;
-
-        if (regex.test(logPass) == false) {
-            console.log("Password Contains Invalid Information");
-        }
-
-        else {
-
-            console.log("Password is Valid!");
-            logPassErr = false;
+    
+    if (!password) {
+        errors.push("Password required");
+    } else {
+        const regex = /^(?=.*[A-Za-z])(?=.*\d).{8,32}$/;
+        if (!regex.test(password)) {
+            errors.push("Password: 8-32 characters with letters and numbers");
         }
     }
-
-    if ((logNameErr || logPassErr) == true) {
+    
+    if (errors.length > 0) {
+        document.getElementById("loginResult").innerHTML = errors.join("<br>");
         return false;
     }
     return true;
-
 }
-
 // Go thorugh all possible failed registrations returns true if valid register
 function validRegister(fName, lName, user, pass) {
+    let errors = [];
 
-    var fNameErr = lNameErr = userErr = passErr = true;
-
-    if (fName == "") {
-        console.log("Please Fill In a First Name");
-    }
-    else {
-        console.log("First Nameis Valid!");
-        fNameErr = false;
-    }
-
-    if (lName == "") {
-        console.log("Please Fill In a Last Name");
-    }
-    else {
-        console.log("Last Name is Valid!");
-        lNameErr = false;
+    if (!fName) errors.push("First name required");
+    if (!lName) errors.push("Last name required");
+    
+    if (!user) {
+        errors.push("Username required");
+    } else if (!/(?=.*[A-Za-z]).{8,32}/.test(user)) {
+        errors.push("Username: 8-32 chars with letters");
     }
 
-    if (user == "") {
-        console.log("Please Fill In a Username");
-    }
-    else {
-        var regex = /(?=.*[A-Za-z]).{8,32}/;
-
-        if (regex.test(user) == false) {
-            console.log("Username Contains Invalid Information");
-        }
-
-        else {
-
-            console.log("Username is Valid!");
-            userErr = false;
-        }
+    if (!pass) {
+        errors.push("Password required");
+    } else if (!/(?=.*[A-Za-z]).{8,32}/.test(pass)) {
+        errors.push("Password: 8-32 chars with letters");
     }
 
-    if (pass == "") {
-        console.log("Please Fill In a Password");
-    }
-    else {
-        var regex = /(?=.*[A-Za-z]).{8,32}/;
-
-        if (regex.test(pass) == false) {
-            console.log("Password Contains Invalid Information");
-        }
-
-        else {
-
-            console.log("Password is Valid!");
-            passErr = false;
-        }
-    }
-
-    if ((fNameErr || lNameErr || userErr || passErr) == true) {
+    if (errors.length > 0) {
+        document.getElementById("registerResult").innerHTML = errors.join("<br>");
         return false;
-
     }
-
     return true;
 }
