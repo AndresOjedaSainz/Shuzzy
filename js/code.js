@@ -15,10 +15,10 @@ function doLogin()
 	let password = document.getElementById("loginPassword").value;
 	var hash = md5( password );
 
-	if (!validLoginForm(login, password)) {
-        document.getElementById("loginResult").innerHTML = "invalid username or password";
+	if (!validLogin(login, password)) {
+        document.getElementById("loginResult").innerHTML = "Username / Password is incorrect!";
         return;
-    	}
+    }
 	
 	document.getElementById("loginResult").innerHTML = "";
 
@@ -70,7 +70,7 @@ function doRegister()
     let username = document.getElementById("username").value;
     let password = document.getElementById("password").value;
 
-    if (!validRegisterForm(firstName, lastName, username, password)) {
+    if (!validRegister(firstName, lastName, username, password)) {
         document.getElementById("registerResult").innerHTML = "invalid registry";
         return;
     }
@@ -171,4 +171,114 @@ function doLogout()
 	lastName = "";
 	document.cookie = "firstName= ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
 	window.location.href = "index.html";
+}
+
+// Go through all possible failed logins returns true if valid login
+function validLogin(logName, logPass) {
+
+    var logNameErr = logPassErr = true;
+
+    if (logName == "") {
+        console.log("Please Fill In a Username");
+    }
+    else {
+        var regex = /(?=.*[a-zA-Z])[a-zA-Z0-9-_]{3,18}$/;
+
+        if (regex.test(logName) == false) {
+            console.log("Username Contains Invalid Information");
+        }
+
+        else {
+
+            console.log("Username is Valid!");
+            logNameErr = false;
+        }
+    }
+
+    if (logPass == "") {
+        console.log("Please Fill In a Password");
+        logPassErr = true;
+    }
+    else {
+        var regex = /(?=.*\d)(?=.*[A-Za-z])(?=.*[!@#$%^&*]).{8,32}/;
+
+        if (regex.test(logPass) == false) {
+            console.log("Password Contains Invalid Information");
+        }
+
+        else {
+
+            console.log("Password is Valid!");
+            logPassErr = false;
+        }
+    }
+
+    if ((logNameErr || logPassErr) == true) {
+        return false;
+    }
+    return true;
+
+}
+
+// Go thorugh all possible failed registrations returns true if valid register
+function validRegister(fName, lName, user, pass) {
+
+    var fNameErr = lNameErr = userErr = passErr = true;
+
+    if (fName == "") {
+        console.log("Please Fill In a First Name");
+    }
+    else {
+        console.log("First Nameis Valid!");
+        fNameErr = false;
+    }
+
+    if (lName == "") {
+        console.log("Please Fill In a Last Name");
+    }
+    else {
+        console.log("Last Name is Valid!");
+        lNameErr = false;
+    }
+
+    if (user == "") {
+        console.log("Please Fill In a Username");
+    }
+    else {
+        var regex = /(?=.*[a-zA-Z])([a-zA-Z0-9-_]).{3,18}$/;
+
+        if (regex.test(user) == false) {
+            console.log("Username Contains Invalid Information");
+        }
+
+        else {
+
+            console.log("Username is Valid!");
+            userErr = false;
+        }
+    }
+
+    if (pass == "") {
+        console.log("Please Fill In a Password");
+    }
+    else {
+        var regex = /(?=.*\d)(?=.*[A-Za-z])(?=.*[!@#$%^&*]).{8,32}/;
+
+        if (regex.test(pass) == false) {
+            console.log("Password Contains Invalid Information");
+        }
+
+        else {
+
+            console.log("Password is Valid!");
+            passErr = false;
+        }
+    }
+
+    if ((fNameErr || lNameErr || userErr || passErr) == true) {
+        return false;
+
+    }
+
+    return true;
 }
