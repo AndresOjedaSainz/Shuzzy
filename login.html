@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - COP 4331 Project</title>
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <script type="text/javascript" src="js/md5.js"></script>
+    <script type="text/javascript" src="js/code.js"></script>
+</head>
+<body>
+    <img id="logo" src= "images/shuzzy.png">
+    <div class="auth-container">
+        <h1 class="auth-title">Welcome Back!</h1>
+        <div id="loginDiv" class="auth-form">
+            <span id="loginTitle" class="form-subtitle">
+                Please Sign In
+            </span>
+
+            <div class="form-group">
+                <label for="loginName" class="form-label">Username</label>
+                <input type="text" id="loginName" placeholder="Enter your username" class="form-input">
+            </div>
+            
+            <div class="form-group">
+                <label for="loginPassword" class="form-label">Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password" class="form-input">
+            </div>
+            
+            <button type="button" id="loginButton" class="button button-primary" onclick="doLogin();">
+                Log In
+            </button>
+            
+            <span id="loginResult" class="form-message"></span>
+            <p class="auth-link">
+                Don't have an account? 
+                <a href="register.html">Sign Up</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
