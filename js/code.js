@@ -182,7 +182,7 @@ function validLogin(logName, logPass) {
         console.log("Please Fill In a Username");
     }
     else {
-        var regex = /(?=.*[a-zA-Z])[a-zA-Z0-9-_]{3,18}$/;
+        var regex = /(?=.*[A-Za-z]).{8,32}/;
 
         if (regex.test(logName) == false) {
             console.log("Username Contains Invalid Information");
@@ -200,7 +200,7 @@ function validLogin(logName, logPass) {
         logPassErr = true;
     }
     else {
-        var regex = /(?=.*\d)(?=.*[A-Za-z])(?=.*[!@#$%^&*]).{8,32}/;
+        var regex = /(?=.*[A-Za-z]).{8,32}/;
 
         if (regex.test(logPass) == false) {
             console.log("Password Contains Invalid Information");
@@ -245,7 +245,7 @@ function validRegister(fName, lName, user, pass) {
         console.log("Please Fill In a Username");
     }
     else {
-        var regex = /(?=.*[a-zA-Z])([a-zA-Z0-9-_]).{3,18}$/;
+        var regex = /(?=.*[A-Za-z]).{8,32}/;
 
         if (regex.test(user) == false) {
             console.log("Username Contains Invalid Information");
@@ -262,7 +262,7 @@ function validRegister(fName, lName, user, pass) {
         console.log("Please Fill In a Password");
     }
     else {
-        var regex = /(?=.*\d)(?=.*[A-Za-z])(?=.*[!@#$%^&*]).{8,32}/;
+        var regex = /(?=.*[A-Za-z]).{8,32}/;
 
         if (regex.test(pass) == false) {
             console.log("Password Contains Invalid Information");
