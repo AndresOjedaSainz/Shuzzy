@@ -223,3 +223,80 @@ function validRegister(fName, lName, user, pass) {
     }
     return true;
 }
+
+// Render contacts to the page
+function renderContacts(contactsArray) {
+    if (contactsArray.length === 0) {
+        contactsContent.innerHTML = '<div class="empty-contacts">No contacts match your search.</div>';
+        return;
+    }
+            
+    let html = '';
+    contactsArray.forEach(contact => {
+        html += `
+            <div class="contact-row">
+                <div class="name-cell">${contact.firstName} ${contact.lastName}</div>
+                <div class="phone-cell">${contact.phone}</div>
+                <div class="email-cell">${contact.email}</div>
+                <div class="date-cell">${contact.date}</div>
+                <div class="actions-cell">
+                    <button class="button button-danger" onclick="deleteContact(${contact.id})">Delete</button>
+                </div>
+            </div>
+        `;
+    });
+     
+    contactsContent.innerHTML = html;
+}
+
+// Add a new contact
+function addContact() {
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+ 
+    if (!firstName || !lastName || !phone || !email) {
+        formMessage.textContent = "Please fill in all fields";
+        formMessage.style.color = "#ffeb3b";
+        return;
+    }
+
+    // Create new contact object
+    const newContact = {
+        id: contacts.length + 1,
+        firstName,
+        lastName,
+        phone,
+        email,
+        date: new Date().toISOString().split('T')[0] // Current date in YYYY-MM-DD
+    };
+    
+    // Add to contacts array
+    contacts.unshift(newContact); // Add to beginning
+ 
+    document.getElementById('firstName').value = '';
+    document.getElementById('lastName').value = '';
+    document.getElementById('phone').value = '';
+    document.getElementById('email').value = '';
+            
+    formMessage.textContent = "Contact added successfully!";
+    formMessage.style.color = "#4caf50";
+            
+    // Update UI
+    renderContacts(contacts);
+    searchInput.value = '';
+            
+    // Reset message after 3 seconds
+    setTimeout(() => {
+        formMessage.textContent = '';
+    }, 3000);
+}
+        
+// Delete a contact
+function deleteContact(contactId) {
+    if (confirm("Are you sure you want to delete this contact?")) {
+        contacts = contacts.filter(contact => contact.id !== contactId);
+        renderContacts(contacts);
+    }
+}
