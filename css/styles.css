@@ -258,3 +258,132 @@ body {
     color: #fffde7;
     font-size: 1em;
 }
+
+/* CONTACTS CONTAINER */
+.contacts-container {
+    background-color: rgba(0, 0, 50, 0.6);
+    padding: 30px;
+    margin: 20px auto;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    width: 90%;
+    max-width: 1000px;
+}
+
+.contacts-title {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #ffe082;
+    text-align: center;
+}
+
+/* FORM STYLES */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+    color: #fffde7;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1em;
+    background-color: #e0f7fa;
+    color: #004d40;
+}
+
+.form-message {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #ffeb3b;
+}
+
+/* CONTACTS LIST */
+.contacts-list {
+    margin-top: 30px;
+    border-top: 2px solid rgba(255, 255, 255, 0.2);
+    padding-top: 20px;
+}
+
+.contacts-header {
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr 2fr 1fr;
+    padding: 15px 20px;
+    background-color: rgba(0, 47, 75, 0.7);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.contact-row {
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr 2fr 1fr;
+    padding: 15px 20px;
+    background-color: rgba(0, 47, 75, 0.4);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.contact-row:hover {
+    background-color: rgba(0, 90, 120, 0.6);
+    transform: translateX(5px);
+}
+
+.empty-contacts {
+    text-align: center;
+    padding: 30px;
+    font-style: italic;
+    color: #b2ebf2;
+}
+
+/* SEARCH BAR */
+.search-container {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.search-container input {
+    padding-left: 40px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #005f73;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+    .contacts-header, .contact-row {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: 
+            "name name"
+            "phone email"
+            "actions actions";
+    }
+            
+    .name-cell { grid-area: name; }
+    .phone-cell { grid-area: phone; }
+    .email-cell { grid-area: email; }
+    .actions-cell { 
+        grid-area: actions; 
+        text-align: right;
+        margin-top: 10px;
+    }
+            
+    .contacts-header {
+        display: none;
+    }
+}
