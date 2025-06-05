@@ -1,65 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - COP 4331 Project</title>
-    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shuzzy</title>
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet" />
     <link href="css/styles.css" rel="stylesheet">
-    <link rel="icon" href="images/shuzzy_minimal.png" type="image/png">
+    <link rel="icon" href="images/shuzzy_minimal.png" type="image/png" />
     <script type="text/javascript" src="js/md5.js"></script>
     <script type="text/javascript" src="js/code.js"></script>
 </head>
 <body>
-  <button class="button-back" onclick="window.location.href='dashboard.html';">
-    ← Dashboard
-  </button>
-  
-  <img id="logo" src="images/shuzzy.png" alt="Shuzzy Logo">
 
-  <div class="about-container">
-    <h1 class="about-title">Meet the team!</h1>
+    <button class="button-back" onclick="window.location.href='dashboard.html';">
+        ← Dashboard
+    </button>
 
-    <div class="team-row">
-      <!-- Team Member #1 -->
-      <div class="team-member">
-        <img
-          src="images/andresShark.gif"
-          alt="Andres Shark"
-          class="member-gif"
-        />
-        <p>Andres Ojeda Sainz</p>
-      </div>
+    <img id="logo" src= "images/shuzzy.png">
 
-      <!-- Team Member #2 -->
-      <div class="team-member">
-        <img
-          src="images/johnShark.gif"
-          alt="John Shark"
-          class="member-gif"
-        />
-        <p>John Kilroy</p>
-      </div>
+    <div class="dashboard-container">
+        <h1 class="dashboard-title">Meet the Team</h1>
 
-      <!-- Team Member #3 -->
-      <div class="team-member">
-        <img
-          src="images/noahShark.gif"
-          alt="Noah Shark"
-          class="member-gif"
-        />
-        <p>Noah Fourari</p>
-      </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <img src="images/shark_toilet.gif" alt="Team Member 1" class="team-img" />
+                <h2 class="feature-title">Noah Fourari</h2>
+                <h3 class="team-role">Project Manager/Frontend Developer</h3>
+                <p>Largest catch was a 500lb bass in the UCF reflection pond</p>
+            </div>
 
-      <!-- Team Member #4 -->
-      <div class="team-member">
-        <img
-          src="images/alecShark.gif"
-          alt="Alec Shark"
-          class="member-gif"
-        />
-        <p>Alec Baker</p>
-      </div>
+            <div class="feature-card">
+                <img src="images/designer.gif" alt="Team Member 2" class="team-img" />
+                <h2 class="feature-title">John Kilroy</h2>
+                <h3 class="team-role">Frontend Developer</h3>
+                <p>Filler text here.Idk something about John. Goat front-end developer. Blah Blah Blah.</p>
+            </div>
+
+            <div class="feature-card">
+                <img src="images/cat_typing.gif" alt="Team Member 3" class="team-img" />
+                <h2 class="feature-title">Andres Ojeda Sainz</h2>
+                <h3 class="team-role">Backend Developer/API Integration</h3>
+                <p>More filler text. This guy works at universal. I'm Andres I'm a security guard don't mess with me. I will find you and I will kill you.</p>
+            </div>
+
+            <div class="feature-card">
+                <img src="images/nike_shark.gif" alt="Team Member 4" class="team-img" />
+                <h2 class="feature-title">Alec Baker</h2>
+                <h3 class="team-role">Backend Developer/Database Integration</h3>
+                <p>Even more filler text. Idk what else to write. Alex goat database guy. He stores all the data. Super awesome cool guy 10/10 would recommend.</p>
+            </div>
+        </div>
     </div>
-  </div>
+
 </body>
+</html>
