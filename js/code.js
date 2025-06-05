@@ -300,3 +300,155 @@ function deleteContact(contactId) {
         renderContacts(contacts);
     }
 }
+
+// Render contacts to the page
+function renderContacts(contactsArray) {
+    const contactsContent = document.getElementById("contactsContent");
+    if (!contactsContent) return;
+
+    if (contactsArray.length === 0) {
+        contactsContent.innerHTML = '<div class="empty-contacts">No contacts match your search.</div>';
+        return;
+    }
+
+    let html = '';
+    contactsArray.forEach(contact => {
+        html += `
+            <div class="contact-row">
+                <div class="name-cell">${contact.firstName} ${contact.lastName}</div>
+                <div class="phone-cell">${contact.phone}</div>
+                <div class="email-cell">${contact.email}</div>
+                <div class="date-cell">${contact.date}</div>
+                <div class="actions-cell">
+                    <button class="button button-danger" onclick="deleteContact(${contact.id})">Delete</button>
+                </div>
+            </div>
+        `;
+    });
+
+    contactsContent.innerHTML = html;
+}
+
+// Fetch contacts (with optional search filter)
+function searchContacts() {
+    const searchInput = document.getElementById("searchInput");
+    const searchValue = searchInput ? searchInput.value.trim() : "";
+
+    let tmp = {
+        userId: userId,
+        search: searchValue
+    };
+    let jsonPayload = JSON.stringify(tmp);
+    let url = urlBase + '/searchContact.' + extension;
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+    xhr.onreadystatechange = function () {
+        if (this.readyState === 4 && this.status === 200) {
+            let contactsArray = JSON.parse(xhr.responseText);
+            renderContacts(contactsArray);
+        }
+    };
+    xhr.send(jsonPayload);
+}
+
+// Add a new contact via API
+function addContact() {
+    const firstNameInput = document.getElementById('firstName');
+    const lastNameInput = document.getElementById('lastName');
+    const phoneInput = document.getElementById('phone');
+    const emailInput = document.getElementById('email');
+    const formMessage = document.getElementById('formMessage');
+
+    const fName = firstNameInput.value.trim();
+    const lName = lastNameInput.value.trim();
+    const phone = phoneInput.value.trim();
+    const email = emailInput.value.trim();
+
+    if (!fName || !lName || !phone || !email) {
+        formMessage.textContent = "Please fill in all fields";
+        formMessage.style.color = "#ffeb3b";
+        return;
+    }
+
+    let tmp = {
+        userId: userId,
+        firstName: fName,
+        lastName: lName,
+        phone: phone,
+        email: email
+    };
+    let jsonPayload = JSON.stringify(tmp);
+    let url = urlBase + '/addContact.' + extension;
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+    xhr.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                formMessage.textContent = "Contact added successfully!";
+                formMessage.style.color = "#4caf50";
+
+                // Clear inputs
+                firstNameInput.value = '';
+                lastNameInput.value = '';
+                phoneInput.value = '';
+                emailInput.value = '';
+
+                // Refresh the contact list
+                searchContacts();
+
+                setTimeout(() => {
+                    formMessage.textContent = '';
+                }, 3000);
+            } else {
+                let jsonObject = JSON.parse(xhr.responseText);
+                formMessage.textContent = jsonObject.error;
+                formMessage.style.color = "#ff5252";
+            }
+        }
+    };
+    xhr.send(jsonPayload);
+}
+
+// Delete a contact via API
+function deleteContact(contactId) {
+    if (!confirm("Are you sure you want to delete this contact?")) return;
+
+    let tmp = {
+        userId: userId,
+        contactId: contactId
+    };
+    let jsonPayload = JSON.stringify(tmp);
+    let url = urlBase + '/deleteContact.' + extension;
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+    xhr.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            let jsonObject = JSON.parse(xhr.responseText);
+            if (jsonObject.error) {
+                alert("Delete failed: " + jsonObject.error);
+            } else {
+                searchContacts();
+            }
+        }
+    };
+    xhr.send(jsonPayload);
+}
+
+// Called on contacts.html load
+document.addEventListener("DOMContentLoaded", () => {
+    // Attach search input listener
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        searchInput.addEventListener("input", () => {
+            searchContacts();
+        });
+    }
+
+    searchContacts();
+});
