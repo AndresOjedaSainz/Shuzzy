@@ -3,44 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - COP 4331 Project</title>
+    <title>Shuzzy</title>
     <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
     <link href="css/styles.css" rel="stylesheet">
     <link rel="icon" href="images/shuzzy_minimal.png" type="image/png">
     <script type="text/javascript" src="js/md5.js"></script>
     <script type="text/javascript" src="js/code.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 100vh;
+            align-items: center;
+        }
+        .nav-brand {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 2.2em;
+        }
+        .logout-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .navbar {
+            width: auto;
+            background-color: rgba(0, 0, 50, 0.6);
+            display: inline-block;
+            padding: 15px 30px;
+        }
+        .nav-container {
+            width: auto;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
-        <div class="container nav-container">
+        <div class="container nav-container" style="flex-direction: column;">
             <a href="#" class="nav-brand">Shuzzy Dashboard</a>
-            <button onclick="doLogout()" class="button button-danger">
-                Logout
-            </button>
+            <div class="logout-container">
+                <button onclick="doLogout()" class="button button-danger">
+                    Logout
+                </button>
+            </div>
         </div>
     </nav>
 
     <div class="container dashboard-container">
         <div class="card">
-            <h1 class="dashboard-title">Welcome to the Main Page!</h1>
-            <p class="dashboard-text">
+            <h1 class="dashboard-title" style="text-align: center;">Welcome to the Main Page!</h1>
+            <p class="dashboard-text" style="text-align: center;">
                 You have successfully logged in. This is your dashboard.
             </p>
-            <p class="dashboard-text">
+            <p class="dashboard-text" style="text-align: center;">
                 From here, you can access various features of Shuzzy!
             </p>
             <div class="features-grid">
                 <div class="feature-card">
                     <h2 class="feature-title">Anglers Near You</h2>
                     <p>Add or Remove Anglers via our Contacts page</p>
-                    <button type="button" id="loginButton" class="button button-primary" onclick="window.location.href='contacts.html';">
+                    <button type="button" class="button button-primary" onclick="window.location.href='contacts.html';">
                         Go there now!
                     </button>
                 </div>
                 <div class="feature-card">
                     <h2 class="feature-title">About Us!</h2>
                     <p>Meet the team behind Shuzzy!</p>
-                    <button type="button" id="loginButton" class="button button-primary" onclick="window.location.href='about.html';">
+                    <button type="button" class="button button-primary" onclick="window.location.href='about.html';">
                         Meet us now!
                     </button>
                 </div>
