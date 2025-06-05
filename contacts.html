@@ -8,8 +8,7 @@
     <link href="css/styles.css" rel="stylesheet">
     <link rel="icon" href="images/shuzzy_minimal.png" type="image/png">
     <script type="text/javascript" src="js/md5.js"></script>
-    <script type="text/javascript" src="js/code.js"></script>
-</head>
+    <script type="text/javascript" src="js/code.js"></script> </head>
 <body>
     <button class="button-back" onclick="window.location.href='dashboard.html';">
         ← Dashboard
@@ -18,10 +17,12 @@
     <img id="logo" src="images/shuzzy.png" alt="Shuzzy Logo">
     
     <div class="contacts-container">
-        <h1 class="contacts-title">Your Contacts (WIP)</h1>
-        
-        <div class="add-contact-form">
+        <h1 class="contacts-title">Your Contacts</h1> <div class="add-contact-form">
             <h2>Add New Contact</h2>
+            <div class="form-group">
+                <label for="firstName" class="form-label">User Name</label>
+                <input type="text" id="userName" class="form-input" placeholder="Enter user name">
+            </div>
             <div class="form-group">
                 <label for="firstName" class="form-label">First Name</label>
                 <input type="text" id="firstName" class="form-input" placeholder="Enter first name">
@@ -29,10 +30,6 @@
             <div class="form-group">
                 <label for="lastName" class="form-label">Last Name</label>
                 <input type="text" id="lastName" class="form-input" placeholder="Enter last name">
-            </div>
-            <div class="form-group">
-                <label for="userName" class="form-label">User Name</label>
-                <input type="text" id="userName" class="form-input" placeholder="Enter user name">
             </div>
             <div class="form-group">
                 <label for="phone" class="form-label">Phone</label>
@@ -45,26 +42,27 @@
             <button class="button button-success" onclick="addContact()">Add Contact</button>
             <span id="formMessage" class="form-message"></span>
         </div>
-             <div>
+
+        <div class="search-container" style="margin-top: 20px; margin-bottom: 10px;">
+             <input type="search" id="searchInput" class="form-input" placeholder="Search contacts by name, email, or phone..." style="width: 100%; padding: 10px;">
+        </div>
+            
+        <div>
             <table id="contactTable" class="contactTable">
-                <tr>
-                    <th style="width: 20%;">FIRST NAME</th>
-                    <th style="width: 20%;">LAST NAME</th>
-                    <th style="width: 25%;">EMAIL</th>
-                    <th style="width: 20%;">PHONE #</th>
-                    <th style="width: 15%;">ACTIONS</th>
-                </tr>
-                <tr>
-                    <td class = "first_Name" id="first_Name0">Please</td>
-                    <td class = "last_Name" id="last_Name0">add</td>
-                    <td class = "email" id="email0">a</td>
-                    <td class = "phone" id="phone0">contact</td>
-                    <td>
-                        <button id="change"><img id="change" name="change" src="Images/ChangeIcon.webp" title="Change" onclick="edit_row(0, 1)"></button>
-                        <button id="delete"><img id="delete" name="delete" src="Images/TrashCan.webp" title="Delete" onclick="deleteContact(0, 1)"></button>
-                    </td>
-                </tr>
+                <thead> <tr>
+                        <th style="width: 20%;">USER NAME</th>
+                        <th style="width: 20%;">FIRST NAME</th>
+                        <th style="width: 20%;">LAST NAME</th>
+                        <th style="width: 25%;">EMAIL</th>      <th style="width: 20%;">PHONE #</th>
+                        <th style="width: 15%; text-align: center;">ACTIONS</th> </tr>
+                </thead>
+                <tbody id="contactTableBody"> <tr>
+                        <td colspan="5" style="text-align:center;">Loading contacts...</td>
+                    </tr> 
+                </tbody>
             </table>
         </div>
-        </div>
     </div>
+
+</body>
+</html>
