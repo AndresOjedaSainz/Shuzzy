@@ -31,6 +31,10 @@
                 <input type="text" id="lastName" class="form-input" placeholder="Enter last name">
             </div>
             <div class="form-group">
+                <label for="userName" class="form-label">User Name</label>
+                <input type="text" id="userName" class="form-input" placeholder="Enter user name">
+            </div>
+            <div class="form-group">
                 <label for="phone" class="form-label">Phone</label>
                 <input type="tel" id="phone" class="form-input" placeholder="Enter phone number">
             </div>
@@ -41,17 +45,26 @@
             <button class="button button-success" onclick="addContact()">Add Contact</button>
             <span id="formMessage" class="form-message"></span>
         </div>
-        
-        <div class="search-container">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="searchInput" class="form-input" placeholder="Search contacts...">
+             <div>
+            <table id="contactTable" class="contactTable">
+                <tr>
+                    <th style="width: 20%;">FIRST NAME</th>
+                    <th style="width: 20%;">LAST NAME</th>
+                    <th style="width: 25%;">EMAIL</th>
+                    <th style="width: 20%;">PHONE #</th>
+                    <th style="width: 15%;">ACTIONS</th>
+                </tr>
+                <tr>
+                    <td class = "first_Name" id="first_Name0">Please</td>
+                    <td class = "last_Name" id="last_Name0">add</td>
+                    <td class = "email" id="email0">a</td>
+                    <td class = "phone" id="phone0">contact</td>
+                    <td>
+                        <button id="change"><img id="change" name="change" src="Images/ChangeIcon.webp" title="Change" onclick="edit_row(0, 1)"></button>
+                        <button id="delete"><img id="delete" name="delete" src="Images/TrashCan.webp" title="Delete" onclick="deleteContact(0, 1)"></button>
+                    </td>
+                </tr>
+            </table>
         </div>
-            
-            <div id="contactsContent">
-                <!-- Contacts will be loaded here dynamically -->
-                <div class="empty-contacts">
-                    You don't have any contacts yet. Add your first contact!
-                </div>
-            </div>
         </div>
     </div>
