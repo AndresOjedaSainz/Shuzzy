@@ -5,61 +5,78 @@ let userId = 0;
 let firstName = "";
 let lastName = "";
 
-function doLogin()
-{
-	userId = 0;
-	firstName = "";
-	lastName = "";
-	
-	let login = document.getElementById("loginName").value;
-	let password = document.getElementById("loginPassword").value;
+function doLogin() {
+    userId = 0;
+    firstName = "";
+    lastName = "";
+    
+    let login = document.getElementById("loginName").value;
+    let password = document.getElementById("loginPassword").value;
 
-	if (!validLogin(login, password)) {
-        document.getElementById("loginResult").innerHTML = "Username / Password is incorrect!";
+    if (!validLogin(login, password)) { // Assuming validLogin shows its own messages
         return;
     }
-	
-	var hash = md5( password );
-	document.getElementById("loginResult").innerHTML = "";
+    
+    var hash = md5(password); // Ensure md5 function is available and working
+    document.getElementById("loginResult").innerHTML = "";
 
-	let tmp = {login:login,password:hash};
-	let jsonPayload = JSON.stringify( tmp );
-	
-	let url = urlBase + '/Login.' + extension;
+    let tmp = {login:login, password:hash};
+    let jsonPayload = JSON.stringify(tmp);
+    
+    let url = urlBase + '/Login.' + extension;
 
-	let xhr = new XMLHttpRequest();
-	xhr.open("POST", url, true);
-	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
-	try
-	{
-		xhr.onreadystatechange = function() 
-		{
-			if (this.readyState == 4 && this.status == 200) 
-			{
-				let jsonObject = JSON.parse( xhr.responseText );
-				userId = jsonObject.id;
-		
-				if( userId < 1 )
-				{		
-					document.getElementById("loginResult").innerHTML = "User/Password combination incorrect";
-					return;
-				}
-		
-				firstName = jsonObject.firstName;
-				lastName = jsonObject.lastName;
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+    try {
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    let jsonObject;
+                    try {
+                        jsonObject = JSON.parse(xhr.responseText);
+                    } catch (e) {
+                        console.error("Error parsing login JSON response:", e, xhr.responseText);
+                        document.getElementById("loginResult").innerHTML = "Login error: Invalid server response.";
+                        return;
+                    }
+                    
+                    console.log("Login API Response:", jsonObject); 
 
-				saveCookie();
-	
-				window.location.href = "dashboard.html";
-			}
-		};
-		xhr.send(jsonPayload);
-	}
-	catch(err)
-	{
-		document.getElementById("loginResult").innerHTML = err.message;
-	}
+                    // Assign to global variables
+                    userId = jsonObject.id; 
+                    firstName = jsonObject.firstName;
+                    lastName = jsonObject.lastName;
 
+                    console.log("Data received from API:", { userId, firstName, lastName }); // DEBUG
+
+                    if (typeof userId === 'undefined' || userId < 1) {
+                        console.error("Login API returned invalid userId:", userId); // DEBUG
+                        document.getElementById("loginResult").innerHTML = "User/Password combination incorrect or invalid user data.";
+                        userId = 0;
+                        return;
+                    }
+                    if (typeof firstName === 'undefined' || typeof lastName === 'undefined') {
+                        // Handle potentially missing names, but allow login if ID is fine
+                        console.warn("Login API returned undefined firstName or lastName."); // DEBUG
+                        firstName = firstName || "";
+                        lastName = lastName || "";
+                    }
+            
+                    saveCookie();
+            
+                    window.location.href = "dashboard.html";
+                } else {
+                    document.getElementById("loginResult").innerHTML = "Login failed. Status: " + this.status;
+                    console.error("Login request failed. Status:", this.status, "Response:", xhr.responseText);
+                }
+            }
+        };
+        xhr.send(jsonPayload);
+    } catch(err) {
+        document.getElementById("loginResult").innerHTML = err.message;
+        console.error("Error in doLogin try-catch:", err);
+    }
 }
 
 function doRegister()
@@ -120,45 +137,98 @@ try {
     }
 }
 
-function saveCookie()
-{
-	let minutes = 20;
-	let date = new Date();
-	date.setTime(date.getTime()+(minutes*60*1000));	
-	document.cookie = "firstName=" + firstName + ",lastName=" + lastName + ",userId=" + userId + ";expires=" + date.toGMTString();
+function saveCookie() {
+    let minutes = 20;
+    let date = new Date();
+    date.setTime(date.getTime() + (minutes * 60 * 1000));
+    let expires = ";expires=" + date.toGMTString();
+    let path = ";path=/";
+
+    // Log the values being saved
+    console.log("Attempting to save cookie with values:", { userId, firstName, lastName, expires, path }); // DEBUG
+
+    if (typeof userId === 'undefined' || userId < 1) {
+        console.error("saveCookie: userId is invalid. Cookie not saved properly.", userId);
+        return;
+    }
+
+    document.cookie = "userId=" + encodeURIComponent(userId) + expires + path;
+    document.cookie = "firstName=" + encodeURIComponent(firstName || "") + expires + path;
+    document.cookie = "lastName=" + encodeURIComponent(lastName || "") + expires + path;
+
+    console.log("Cookies should now be set. Current document.cookie:", document.cookie); // DEBUG
 }
 
-function readCookie()
-{
-	userId = -1;
-	let data = document.cookie;
-	let splits = data.split(",");
-	for(var i = 0; i < splits.length; i++) 
-	{
-		let thisOne = splits[i].trim();
-		let tokens = thisOne.split("=");
-		if( tokens[0] == "firstName" )
-		{
-			firstName = tokens[1];
-		}
-		else if( tokens[0] == "lastName" )
-		{
-			lastName = tokens[1];
-		}
-		else if( tokens[0] == "userId" )
-		{
-			userId = parseInt( tokens[1].trim() );
-		}
-	}
-	
-	if( userId < 0 )
-	{
-		window.location.href = "index.html";
-	}
-	else
-	{
-		document.getElementById("userName").innerHTML = "Logged in as " + firstName + " " + lastName;
-	}
+function readCookie() {
+    userId = -1;
+    firstName = ""; 
+    lastName = "";  
+
+    let data = document.cookie;
+    console.log("readCookie: Raw document.cookie string:", data); // DEBUG
+
+    if (data === "") {
+        console.log("readCookie: No cookies found."); // DEBUG
+    }
+
+    let cookies = data.split(';'); 
+    console.log("readCookie: Split cookies array:", cookies); // DEBUG
+
+    for (let k = 0; k < cookies.length; k++) {
+        let cookiePair = cookies[k].split('=');
+        
+        if (cookiePair.length < 2) {
+            console.log("readCookie: Skipping malformed cookie part:", cookies[k]); // DEBUG
+            continue; 
+        }
+
+        let name = cookiePair[0].trim();
+        let value = decodeURIComponent(cookiePair.slice(1).join('=')); 
+
+        console.log("readCookie: Processing cookie part - Name:", name, "Value:", value); // DEBUG
+
+        if (name === "userId") {
+            userId = parseInt(value);
+            if (isNaN(userId)) {
+                console.warn("readCookie: userId parsed to NaN, resetting to -1. Original value:", value); //DEBUG
+                userId = -1; 
+            }
+        } else if (name === "firstName") {
+            firstName = value;
+        } else if (name === "lastName") {
+            lastName = value;
+        }
+    }
+
+    console.log("readCookie: Parsed values from cookies:", { userId, firstName, lastName }); // DEBUG
+
+    const currentPage = window.location.pathname.split("/").pop();
+    const unprotectedPages = ["index.html", "login.html", "register.html"];
+
+    if (typeof userId !== 'number' || isNaN(userId) || userId < 1) { 
+        console.log(`readCookie: User ID is ${userId} (invalid/not logged in). Current page: ${currentPage}`); // DEBUG
+        if (!unprotectedPages.includes(currentPage)) {
+            console.log(`readCookie: On protected page '${currentPage}', redirecting to index.html.`); // DEBUG
+            window.location.href = "index.html";
+        }
+        // If on an unprotected page, do nothing (allow user to stay)
+    } else { 
+        // User is logged in (userId >= 1)
+        console.log(`readCookie: User ID is ${userId} (logged in). Current page: ${currentPage}`); // DEBUG
+        if (unprotectedPages.includes(currentPage) && currentPage !== "index.html") { 
+            // Optional: If logged in and on login.html or register.html, redirect to dashboard
+            // console.log(`readCookie: On unprotected page '${currentPage}' while logged in, consider redirecting to dashboard.html.`); // DEBUG
+            // window.location.href = "dashboard.html"; // Be careful with redirect loops
+        }
+        
+        let userNameDisplay = document.getElementById("userName"); 
+        if (userNameDisplay) {
+            userNameDisplay.innerHTML = "Logged in as " + firstName + " " + lastName;
+        } else if (!unprotectedPages.includes(currentPage)) {
+            // If on a protected page (not login/register/index) and userName element is missing, log it.
+            console.warn("readCookie: 'userName' element not found on page:", currentPage);
+        }
+    }
 }
 
 function doLogout()
@@ -224,136 +294,6 @@ function validRegister(fName, lName, user, pass) {
     return true;
 }
 
-// Render contacts to the page
-function renderContacts(contactsArray) {
-    if (contactsArray.length === 0) {
-        contactsContent.innerHTML = '<div class="empty-contacts">No contacts match your search.</div>';
-        return;
-    }
-            
-    let html = '';
-    contactsArray.forEach(contact => {
-        html += `
-            <div class="contact-row">
-                <div class="name-cell">${contact.firstName} ${contact.lastName}</div>
-                <div class="phone-cell">${contact.phone}</div>
-                <div class="email-cell">${contact.email}</div>
-                <div class="date-cell">${contact.date}</div>
-                <div class="actions-cell">
-                    <button class="button button-danger" onclick="deleteContact(${contact.id})">Delete</button>
-                </div>
-            </div>
-        `;
-    });
-     
-    contactsContent.innerHTML = html;
-}
-
-// Add a new contact
-function addContact() {
-    const firstName = document.getElementById('firstName').value.trim();
-    const lastName = document.getElementById('lastName').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const email = document.getElementById('email').value.trim();
- 
-    if (!firstName || !lastName || !phone || !email) {
-        formMessage.textContent = "Please fill in all fields";
-        formMessage.style.color = "#ffeb3b";
-        return;
-    }
-
-    // Create new contact object
-    const newContact = {
-        id: contacts.length + 1,
-        firstName,
-        lastName,
-        phone,
-        email,
-        date: new Date().toISOString().split('T')[0] // Current date in YYYY-MM-DD
-    };
-    
-    // Add to contacts array
-    contacts.unshift(newContact); // Add to beginning
- 
-    document.getElementById('firstName').value = '';
-    document.getElementById('lastName').value = '';
-    document.getElementById('phone').value = '';
-    document.getElementById('email').value = '';
-            
-    formMessage.textContent = "Contact added successfully!";
-    formMessage.style.color = "#4caf50";
-            
-    // Update UI
-    renderContacts(contacts);
-    searchInput.value = '';
-            
-    // Reset message after 3 seconds
-    setTimeout(() => {
-        formMessage.textContent = '';
-    }, 3000);
-}
-        
-// Delete a contact
-function deleteContact(contactId) {
-    if (confirm("Are you sure you want to delete this contact?")) {
-        contacts = contacts.filter(contact => contact.id !== contactId);
-        renderContacts(contacts);
-    }
-}
-
-// Render contacts to the page
-function renderContacts(contactsArray) {
-    const contactsContent = document.getElementById("contactsContent");
-    if (!contactsContent) return;
-
-    if (contactsArray.length === 0) {
-        contactsContent.innerHTML = '<div class="empty-contacts">No contacts match your search.</div>';
-        return;
-    }
-
-    let html = '';
-    contactsArray.forEach(contact => {
-        html += `
-            <div class="contact-row">
-                <div class="name-cell">${contact.firstName} ${contact.lastName}</div>
-                <div class="phone-cell">${contact.phone}</div>
-                <div class="email-cell">${contact.email}</div>
-                <div class="date-cell">${contact.date}</div>
-                <div class="actions-cell">
-                    <button class="button button-danger" onclick="deleteContact(${contact.id})">Delete</button>
-                </div>
-            </div>
-        `;
-    });
-
-    contactsContent.innerHTML = html;
-}
-
-// Fetch contacts (with optional search filter)
-function searchContacts() {
-    const searchInput = document.getElementById("searchInput");
-    const searchValue = searchInput ? searchInput.value.trim() : "";
-
-    let tmp = {
-        userId: userId,
-        search: searchValue
-    };
-    let jsonPayload = JSON.stringify(tmp);
-    let url = urlBase + '/searchContact.' + extension;
-
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
-    xhr.onreadystatechange = function () {
-        if (this.readyState === 4 && this.status === 200) {
-            let contactsArray = JSON.parse(xhr.responseText);
-            renderContacts(contactsArray);
-        }
-    };
-    xhr.send(jsonPayload);
-}
-
-// Add a new contact via API
 function addContact() {
     const firstNameInput = document.getElementById('firstName');
     const lastNameInput = document.getElementById('lastName');
@@ -368,19 +308,21 @@ function addContact() {
 
     if (!fName || !lName || !phone || !email) {
         formMessage.textContent = "Please fill in all fields";
-        formMessage.style.color = "#ffeb3b";
+        formMessage.style.color = "#ffeb3b"; // Yellow for warning
         return;
     }
 
+    // The 'userName' field from the form is not used here, consider removing it from HTML or using it.
+
     let tmp = {
-        userId: userId,
+        userId: userId, // Make sure userId is populated (e.g., after login via readCookie)
         firstName: fName,
         lastName: lName,
         phone: phone,
         email: email
     };
     let jsonPayload = JSON.stringify(tmp);
-    let url = urlBase + '/addContact.' + extension;
+    let url = urlBase + '/AddContact.' + extension; // Ensure this matches your PHP filename
 
     let xhr = new XMLHttpRequest();
     xhr.open("POST", url, true);
@@ -388,53 +330,201 @@ function addContact() {
     xhr.onreadystatechange = function () {
         if (this.readyState === 4) {
             if (this.status === 200) {
-                formMessage.textContent = "Contact added successfully!";
-                formMessage.style.color = "#4caf50";
+                let jsonObject = {};
+                try {
+                    jsonObject = JSON.parse(xhr.responseText);
+                } catch (e) {
+                    formMessage.textContent = "Error parsing server response.";
+                    formMessage.style.color = "#ff5252"; // Red for error
+                    return;
+                }
 
-                // Clear inputs
-                firstNameInput.value = '';
-                lastNameInput.value = '';
-                phoneInput.value = '';
-                emailInput.value = '';
+                if (jsonObject.error && jsonObject.error !== "") {
+                    formMessage.textContent = "Error: " + jsonObject.error;
+                    formMessage.style.color = "#ff5252"; // Red for error
+                } else {
+                    formMessage.textContent = jsonObject.message || "Contact added successfully!";
+                    formMessage.style.color = "#4caf50"; // Green for success
 
-                // Refresh the contact list
-                searchContacts();
+                    firstNameInput.value = '';
+                    lastNameInput.value = '';
+                    phoneInput.value = '';
+                    emailInput.value = '';
 
-                setTimeout(() => {
-                    formMessage.textContent = '';
-                }, 3000);
+                    searchContacts(); // Refresh the contact list
+
+                    setTimeout(() => {
+                        formMessage.textContent = '';
+                    }, 3000);
+                }
             } else {
-                let jsonObject = JSON.parse(xhr.responseText);
-                formMessage.textContent = jsonObject.error;
-                formMessage.style.color = "#ff5252";
+                formMessage.textContent = "Error adding contact. Status: " + this.status;
+                try {
+                     let jsonObject = JSON.parse(xhr.responseText);
+                     if(jsonObject.error) {
+                        formMessage.textContent = "Error: " + jsonObject.error;
+                     }
+                } catch(e) {
+                    // continue with generic error
+                }
+                formMessage.style.color = "#ff5252"; // Red for error
             }
         }
     };
     xhr.send(jsonPayload);
 }
 
-// Delete a contact via API
+// Render contacts to the page (Modified for table structure)
+function renderContacts(contactsArray) {
+    const contactTableBody = document.getElementById("contactTableBody"); // Target tbody
+    if (!contactTableBody) {
+        console.error("Element with ID 'contactTableBody' not found.");
+        return;
+    }
+
+    contactTableBody.innerHTML = ''; // Clear existing rows (including placeholder)
+
+    if (!contactsArray || contactsArray.length === 0) {
+        const emptyRow = contactTableBody.insertRow();
+        const cell = emptyRow.insertCell();
+        cell.colSpan = 5; // Span across all columns of your table
+        cell.innerHTML = '<div class="empty-contacts">No contacts found. Add one or refine your search.</div>';
+        cell.style.textAlign = "center";
+        return;
+    }
+
+    contactsArray.forEach(contact => {
+        // Ensure contact object from SearchContact.php has: id, firstName, lastName, phone, email
+        // The 'date' field handling is removed for now as AddContact.php doesn't save it
+        // and HTML table doesn't have a column for it.
+        // If SearchContact.php returns a date and you want to show it, add a <th> and <td> for it.
+        
+        const row = contactTableBody.insertRow();
+
+        row.insertCell().textContent = contact.firstName || "";
+        row.insertCell().textContent = contact.lastName || "";
+        row.insertCell().textContent = contact.email || ""; // Column order based on your HTML
+        row.insertCell().textContent = contact.phone || ""; // Column order based on your HTML
+        
+        const actionsCell = row.insertCell();
+        actionsCell.style.textAlign = "center"; // Optional: center action buttons
+
+        // Edit button (if you implement edit functionality)
+        // const editButton = document.createElement('button');
+        // editButton.className = 'button button-primary'; // Example styling
+        // editButton.innerHTML = 'Edit';
+        // editButton.onclick = function() { /* editContact(contact.id); */ }; // Define editContact
+        // actionsCell.appendChild(editButton);
+
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'button button-danger';
+        // deleteButton.innerHTML = 'Delete'; // Or use an icon as in your original HTML
+        deleteButton.innerHTML = '<img src="Images/TrashCan.webp" alt="Delete" style="height: 20px; vertical-align: middle;" title="Delete">'; // Example with image
+        deleteButton.onclick = function() { deleteContact(contact.id); };
+        actionsCell.appendChild(deleteButton);
+    });
+}
+
+
+// Delete a contact via API (This version seems fine)
 function deleteContact(contactId) {
     if (!confirm("Are you sure you want to delete this contact?")) return;
 
     let tmp = {
-        userId: userId,
-        contactId: contactId
+        userId: userId, // Ensure userId is available globally
+        id: contactId   // Changed from contactId to id to match typical API expectations, verify your deleteContact.php
     };
+    // If your deleteContact.php expects 'contactId', change 'id' back to 'contactId' here.
+    // Based on common practice and your AddContact.php which inserts an 'ID' (auto-increment likely),
+    // the backend for delete might expect 'id' or 'contactId' referring to the contact's primary key.
+
     let jsonPayload = JSON.stringify(tmp);
-    let url = urlBase + '/deleteContact.' + extension;
+    let url = urlBase + '/DeleteContact.' + extension; // Ensure this filename is correct
 
     let xhr = new XMLHttpRequest();
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
     xhr.onreadystatechange = function () {
         if (this.readyState === 4) {
-            let jsonObject = JSON.parse(xhr.responseText);
-            if (jsonObject.error) {
+            let jsonObject = {};
+            try {
+                jsonObject = JSON.parse(xhr.responseText);
+            } catch(e) {
+                alert("Delete failed: Could not parse server response.");
+                return;
+            }
+
+            if (jsonObject.error && jsonObject.error !== "") {
                 alert("Delete failed: " + jsonObject.error);
             } else {
-                searchContacts();
+                // alert(jsonObject.message || "Contact deleted successfully"); // Optional success message
+                searchContacts(); // Refresh the contact list
             }
+        }
+    };
+    xhr.send(jsonPayload);
+}
+
+
+// Fetch contacts (with optional search filter)
+// This function seems okay, assuming SearchContact.php works correctly
+function searchContacts() {
+    const searchInput = document.getElementById("searchInput"); // Assuming you add this to contacts.html
+    const searchValue = searchInput ? searchInput.value.trim() : "";
+
+    // Ensure userId is loaded, e.g. by calling readCookie() when the page loads or checking if it's valid
+    if (userId < 1 && typeof readCookie === "function") {
+        readCookie(); // Attempt to load cookie if userId is not set
+        if (userId < 1) {
+            // If still not logged in, redirect or show message
+            // window.location.href = "index.html"; // Or handle appropriately
+            console.log("User not logged in. Cannot search contacts.");
+            const contactTableBody = document.getElementById("contactTableBody");
+            if (contactTableBody) {
+                 contactTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Please log in to view contacts.</td></tr>';
+            }
+            return;
+        }
+    }
+
+
+    let tmp = {
+        userId: userId,
+        search: searchValue
+    };
+    let jsonPayload = JSON.stringify(tmp);
+    let url = urlBase + '/SearchContact.' + extension; // Ensure this filename is correct
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+    xhr.onreadystatechange = function () {
+        if (this.readyState === 4 && this.status === 200) {
+            try {
+                let contactsArray = JSON.parse(xhr.responseText);
+                if(contactsArray.error && contactsArray.error !== "") {
+                    console.error("Search error:", contactsArray.error);
+                    // Display error in the table or as an alert
+                    const contactTableBody = document.getElementById("contactTableBody");
+                     if (contactTableBody) {
+                         contactTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Error loading contacts: ${contactsArray.error}</td></tr>`;
+                     }
+                } else {
+                    renderContacts(contactsArray.results || contactsArray); // Adjust if SearchContact.php wraps results in a "results" field
+                }
+            } catch (e) {
+                console.error("Error parsing contacts:", e);
+                 const contactTableBody = document.getElementById("contactTableBody");
+                 if (contactTableBody) {
+                     contactTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Error loading contacts. Invalid format.</td></tr>';
+                 }
+            }
+        } else if (this.readyState === 4) {
+            console.error("Failed to fetch contacts. Status:", this.status);
+             const contactTableBody = document.getElementById("contactTableBody");
+             if (contactTableBody) {
+                 contactTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Could not load contacts. Server error.</td></tr>';
+             }
         }
     };
     xhr.send(jsonPayload);
@@ -442,7 +532,10 @@ function deleteContact(contactId) {
 
 // Called on contacts.html load
 document.addEventListener("DOMContentLoaded", () => {
-    // Attach search input listener
+    readCookie();
+    
+    // Attach search input listener (Add a search input to your HTML if you don't have one)
+    // Example: <input type="search" id="searchInput" placeholder="Search contacts...">
     const searchInput = document.getElementById("searchInput");
     if (searchInput) {
         searchInput.addEventListener("input", () => {
@@ -450,5 +543,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    searchContacts();
+    // Initial load of contacts
+    searchContacts(); 
 });
