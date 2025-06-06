@@ -1,107 +1,75 @@
 <?php
-    // CORS headers
-    header("Access-Control-Allow-Origin: *");
-    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-    header("Access-Control-Allow-Headers: Content-Type");
 
-    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-        http_response_code(200);
-        exit();
-    }
+// CORS headers for permissions
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
 
-    $inData = getRequestInfo();
+// Handle preflight OPTIONS request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
-    // Expecting JSON: { "userId": 123, "search": "partial or full name/email/phone" }
-    $userId = isset($inData["userId"]) ? intval($inData["userId"]) : 0;
-    $search = isset($inData["search"]) ? trim($inData["search"]) : "";
+$inData = getRequestInfo();
 
-    if ($userId < 1) {
-        returnWithError("Invalid userId");
-        exit();
-    }
+$searchResults = "";
+$searchCount = 0;
 
-    $conn = new mysqli("localhost", "TheBeast", "WeLoveCOP4331", "COP4331");
-    if ($conn->connect_error) {
-        returnWithError($conn->connect_error);
-        exit();
-    }
-
-    if ($search !== "") {
-        // Search by FirstName, LastName, Phone, or Email
-        $likeTerm = "%" . $search . "%";
-        $stmt = $conn->prepare(
-            "SELECT ID, FirstName, LastName, Phone, Email, DateAdded
-             FROM Contacts
-             WHERE UserID = ?
-               AND (FirstName LIKE ? OR LastName LIKE ? OR Phone LIKE ? OR Email LIKE ?)
-             ORDER BY DateAdded DESC"
-        );
-        $stmt->bind_param("issss",
-            $userId,
-            $likeTerm, $likeTerm, $likeTerm, $likeTerm
-        );
-    } else {
-        // Return all contacts for this user
-        $stmt = $conn->prepare(
-            "SELECT ID, FirstName, LastName, Phone, Email, DateAdded
-             FROM Contacts
-             WHERE UserID = ?
-             ORDER BY DateAdded DESC"
-        );
-        $stmt->bind_param("i", $userId);
-    }
-
-    if (!$stmt->execute()) {
-        returnWithError($stmt->error);
-        $stmt->close();
-        $conn->close();
-        exit();
-    }
+$conn = new mysqli("localhost", "TheBeast", "WeLoveCOP4331", "COP4331");
+if ($conn->connect_error) {
+    returnWithError($conn->connect_error);
+} else {
+    $stmt = $conn->prepare("SELECT ID, FirstName, LastName, Email, Phone FROM Contacts WHERE FirstName LIKE ? OR LastName LIKE ? OR Email LIKE ? OR Phone LIKE ?");
+    $searchTerm = "%" . $inData["search"] . "%";
+    $stmt->bind_param("ssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+    $stmt->execute();
 
     $result = $stmt->get_result();
-    $contacts = array();
 
     while ($row = $result->fetch_assoc()) {
-        $contacts[] = array(
-            "id"        => intval($row["ID"]),
-            "firstName" => $row["FirstName"],
-            "lastName"  => $row["LastName"],
-            "phone"     => $row["Phone"],
-            "email"     => $row["Email"],
-            "date"      => $row["DateAdded"]
-        );
+        if ($searchCount > 0) {
+            $searchResults .= ",";
+        }
+        $searchCount++;
+        $searchResults .= '{"ID":' . $row["ID"] . 
+                          ',"FirstName":"' . $row["FirstName"] . 
+                          '","LastName":"' . $row["LastName"] . 
+                          '","Email":"' . $row["Email"] . 
+                          '","Phone":"' . $row["Phone"] . '"}';
+    }
+
+    if ($searchCount == 0) {
+        returnWithError("No Records Found");
+    } else {
+        returnWithInfo('[' . $searchResults . ']');
     }
 
     $stmt->close();
     $conn->close();
+}
 
-    // Return an array of contact objects
-    sendResultInfoAsJson(json_encode($contacts));
+function getRequestInfo()
+{
+    return json_decode(file_get_contents('php://input'), true);
+}
 
+function sendResultInfoAsJson($obj)
+{
+    header('Content-type: application/json');
+    echo $obj;
+}
 
-    // Helper functions
-    function getRequestInfo() {
-        return json_decode(file_get_contents('php://input'), true);
-    }
+function returnWithError($err)
+{
+    $retValue = '{"results":[],"error":"' . $err . '"}';
+    sendResultInfoAsJson($retValue);
+}
 
-    function sendResultInfoAsJson($obj) {
-        header('Content-type: application/json');
-        echo $obj;
-    }
+function returnWithInfo($searchResults)
+{
+    $retValue = '{"results":' . $searchResults . ',"error":""}';
+    sendResultInfoAsJson($retValue);
+}
 
-    function returnWithError($err) {
-        // Return an array with a single object containing an "error" key
-        $retValue = array(
-            array(
-                "id"        => 0,
-                "firstName" => "",
-                "lastName"  => "",
-                "phone"     => "",
-                "email"     => "",
-                "date"      => "",
-                "error"     => $err
-            )
-        );
-        sendResultInfoAsJson(json_encode($retValue));
-    }
 ?>
