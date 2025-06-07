@@ -105,12 +105,15 @@ body {
 .button-danger {
     background-color: #e53935;
     color: #fff;
-    padding: 10px 25px;
-    border-radius: 12px;
+    padding: 8px 15px;
+    border-radius: 25px;
     font-weight: bold;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     white-space: nowrap;
     width: auto;
+    display: inline-block;
+    text-align: center;
+    min-width: 80px;
 }
 
 .button-danger:hover {
@@ -519,4 +522,33 @@ body {
         padding: 8px 15px;
         font-size: 0.9em;
     }
+}
+
+.contactTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: rgba(0, 0, 50, 0.4);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.contactTable thead {
+    background-color: rgba(0, 0, 50, 0.6);
+    color: #fff;
+    text-align: left;
+}
+
+.contactTable th, .contactTable td {
+    padding: 15px 20px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.contactTable tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+.contactTable tbody tr:hover {
+    background-color: rgba(0, 90, 120, 0.6);
 }
