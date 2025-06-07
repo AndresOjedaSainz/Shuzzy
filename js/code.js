@@ -13,11 +13,11 @@ function doLogin() {
     let login = document.getElementById("loginName").value;
     let password = document.getElementById("loginPassword").value;
 
-    if (!validLogin(login, password)) { // Assuming validLogin shows its own messages
+    if (!validLogin(login, password)) {
         return;
     }
     
-    var hash = md5(password); // Ensure md5 function is available and working
+    var hash = md5(password);
     document.getElementById("loginResult").innerHTML = "";
 
     let tmp = {login:login, password:hash};
@@ -313,11 +313,11 @@ function addContact() {
     }
 
     let tmp = {
-        userId: userId,
+        userID: userId,
         firstName: fName,
         lastName: lName,
-        phone: phone,
-        email: email
+        phoneNumber: phone,
+        emailAddress: email
     };
     let jsonPayload = JSON.stringify(tmp);
     let url = urlBase + '/AddContact.' + extension;
@@ -349,7 +349,7 @@ function addContact() {
                     phoneInput.value = '';
                     emailInput.value = '';
 
-                    searchContacts(); // Refresh the contact list
+                    searchContacts();
 
                     setTimeout(() => {
                         formMessage.textContent = '';
@@ -363,7 +363,6 @@ function addContact() {
                         formMessage.textContent = "Error: " + jsonObject.error;
                      }
                 } catch(e) {
-                    // continue with generic error
                 }
                 formMessage.style.color = "#ff5252";
             }
@@ -374,14 +373,9 @@ function addContact() {
 
 // Render contacts to the page
 function renderContacts(contactsArray) {
-    const contactTableBody = document.getElementById("contactTableBody"); // Target tbody
-    if (!contactTableBody) {
-        console.error("Element with ID 'contactTableBody' not found.");
-        return;
-    }
-
-    contactTableBody.innerHTML = ''; // Clear existing rows (including placeholder)
-
+    const contactTableBody = document.getElementById("contactTableBody");
+    if (!contactTableBody) return;
+    contactTableBody.innerHTML = '';
     if (!contactsArray || contactsArray.length === 0) {
         const emptyRow = contactTableBody.insertRow();
         const cell = emptyRow.insertCell();
@@ -390,63 +384,38 @@ function renderContacts(contactsArray) {
         cell.style.textAlign = "center";
         return;
     }
-
     contactsArray.forEach(contact => {
-        // Ensure contact object from SearchContact.php has: id, firstName, lastName, phone, email
-        // The 'date' field handling is removed for now as AddContact.php doesn't save it
-        // and HTML table doesn't have a column for it.
-        // If SearchContact.php returns a date and you want to show it, add a <th> and <td> for it.
-        
         const row = contactTableBody.insertRow();
-
-        row.insertCell().textContent = contact.firstName || "";
-        row.insertCell().textContent = contact.lastName || "";
-        row.insertCell().textContent = contact.email || "";
-        row.insertCell().textContent = contact.phone || "";
-        
+        row.insertCell().textContent = "";                        // USER NAME (not provided by API)
+        row.insertCell().textContent = contact.FirstName || "";
+        row.insertCell().textContent = contact.LastName || "";
+        row.insertCell().textContent = contact.Email || "";
+        row.insertCell().textContent = contact.Phone || "";
         const actionsCell = row.insertCell();
-        actionsCell.style.textAlign = "center"; // Optional: center action buttons
-
-        // Edit button (if you implement edit functionality)
-        // const editButton = document.createElement('button');
-        // editButton.className = 'button button-primary'; // Example styling
-        // editButton.innerHTML = 'Edit';
-        // editButton.onclick = function() { /* editContact(contact.id); */ }; // Define editContact
-        // actionsCell.appendChild(editButton);
-
+        actionsCell.style.textAlign = "center";
         const deleteButton = document.createElement('button');
         deleteButton.className = 'button button-danger';
-        // deleteButton.innerHTML = 'Delete';
         deleteButton.innerHTML = '<img src="Images/TrashCan.webp" alt="Delete" style="height: 20px; vertical-align: middle;" title="Delete">';
-        deleteButton.onclick = function() { deleteContact(contact.id); };
+        deleteButton.onclick = function() { deleteContact(contact.ID); };
         actionsCell.appendChild(deleteButton);
     });
 }
 
 function deleteContact(contactId) {
     if (!confirm("Are you sure you want to delete this contact?")) return;
-
-    let tmp = {
-        userId: userId,
-        id: contactId
-    };
-
+    let tmp = { tableID: contactId };
     let jsonPayload = JSON.stringify(tmp);
     let url = urlBase + '/DeleteContact.' + extension;
-
     let xhr = new XMLHttpRequest();
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
     xhr.onreadystatechange = function () {
         if (this.readyState === 4) {
             let jsonObject = {};
-            try {
-                jsonObject = JSON.parse(xhr.responseText);
-            } catch(e) {
+            try { jsonObject = JSON.parse(xhr.responseText); } catch(e) {
                 alert("Delete failed: Could not parse server response.");
                 return;
             }
-
             if (jsonObject.error && jsonObject.error !== "") {
                 alert("Delete failed: " + jsonObject.error);
             } else {
