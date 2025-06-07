@@ -81,7 +81,7 @@ function doLogin() {
 
 function doRegister()
 {
-	firstName = document.getElementById("registerFirstName").value;
+        firstName = document.getElementById("registerFirstName").value;
     lastName = document.getElementById("registerLastName").value;
     let username = document.getElementById("registerUsername").value;
     let password = document.getElementById("registerPassword").value;
@@ -233,11 +233,11 @@ function readCookie() {
 
 function doLogout()
 {
-	userId = 0;
-	firstName = "";
-	lastName = "";
-	document.cookie = "firstName= ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
-	window.location.href = "index.html";
+        userId = 0;
+        firstName = "";
+        lastName = "";
+        document.cookie = "firstName= ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
+        window.location.href = "index.html";
 }
 
 // Go through all possible failed logins returns true if valid login
@@ -386,16 +386,30 @@ function renderContacts(contactsArray) {
     }
     contactsArray.forEach(contact => {
         const row = contactTableBody.insertRow();
-        row.insertCell().textContent = "";                        // USER NAME (not provided by API)
-        row.insertCell().textContent = contact.FirstName || "";
-        row.insertCell().textContent = contact.LastName || "";
-        row.insertCell().textContent = contact.Email || "";
-        row.insertCell().textContent = contact.Phone || "";
+        
+        const firstNameCell = row.insertCell();
+        firstNameCell.textContent = contact.FirstName || "";
+        firstNameCell.style.width = "15%";
+        
+        const lastNameCell = row.insertCell();
+        lastNameCell.textContent = contact.LastName || "";
+        lastNameCell.style.width = "15%";
+        
+        const emailCell = row.insertCell();
+        emailCell.textContent = contact.Email || "";
+        emailCell.style.width = "35%";
+        
+        const phoneCell = row.insertCell();
+        phoneCell.textContent = contact.Phone || "";
+        phoneCell.style.width = "20%";
+        
         const actionsCell = row.insertCell();
+        actionsCell.style.width = "15%";
         actionsCell.style.textAlign = "center";
+        
         const deleteButton = document.createElement('button');
         deleteButton.className = 'button button-danger';
-        deleteButton.innerHTML = '<img src="Images/TrashCan.webp" alt="Delete" style="height: 20px; vertical-align: middle;" title="Delete">';
+        deleteButton.textContent = "Delete";
         deleteButton.onclick = function() { deleteContact(contact.ID); };
         actionsCell.appendChild(deleteButton);
     });
@@ -442,7 +456,6 @@ function searchContacts() {
             return;
         }
     }
-
 
     let tmp = {
         userId: userId,
